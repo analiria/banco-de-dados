@@ -1,0 +1,53 @@
+const form = document.getElementById('formLanche');
+const tabela = document.querySelector('#tabela tbody');
+
+async function carregarLanches() {
+  const res = await fetch('api.php?acao=listar');
+  const dados = await res.json();
+  tabela.innerHTML = dados.map(l =>
+    `<tr>
+      <td>${l.id}</td>
+      <td>${l.nome}</td>
+      <td>${l.descricao}</td>
+      <td>R$ ${parseFloat(l.preco).toFixed(2)}</td>
+      <td>
+        <button onclick="editar(${l.id}, '${l.nome}', '${l.descricao}', ${l.preco})">Editar</button>
+        <button onclick="excluir(${l.id})">Excluir</button>
+      </td>
+    </tr>`
+  ).join('');
+}
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const dados = {
+    id: document.getElementById('id').value,
+    nome: document.getElementById('nome').value,
+    descricao: document.getElementById('descricao').value,
+    preco: parseFloat(document.getElementById('preco').value)
+  };
+  
+  const acao = dados.id ? 'alterar' : 'incluir';
+  await fetch(`api.php?acao=${acao}`, {
+    method: 'POST',
+    body: JSON.stringify(dados)
+  });
+  form.reset();
+  carregarLanches();
+});
+
+function editar(id, nome, descricao, preco) {
+  document.getElementById('id').value = id;
+  document.getElementById('nome').value = nome;
+  document.getElementById('descricao').value = descricao;
+  document.getElementById('preco').value = preco;
+}
+
+async function excluir(id) {
+  if (confirm('Tem certeza que deseja excluir este lanche?')) {
+    await fetch(`api.php?acao=excluir&id=${id}`);
+    carregarLanches();
+  }
+}
+
+carregarLanches();
