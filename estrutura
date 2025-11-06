@@ -1,0 +1,7 @@
+lanche-x-bacon/
+
+index.html        → Página principal
+style.css         → Estilo do site 
+script.js         → Funções JS (chamadas AJAX)
+api.php           → Back-end PHP (CRUD)
+db.sql            → Script para criar banco e tabela
